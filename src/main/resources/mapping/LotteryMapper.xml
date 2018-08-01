@@ -21,10 +21,23 @@
     from lottery
     where numbers = #{numbers,jdbcType=VARCHAR}
   </select>
-   <select id="queryLastByNumbers" resultMap="BaseResultMap" parameterType="java.lang.String" >
+  <select id="queryLastByNumbers" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
     <include refid="Base_Column_List" />
     from lottery
     where id in (select (id-1) from lottery where numbers = #{numbers,jdbcType=VARCHAR})
   </select>  
+  
+  <select id="countNextByNumbers" resultType="java.lang.Integer" parameterType="java.lang.String" >
+    select count(*)
+    from lottery
+    where id in (select (id+1) from lottery where numbers = #{numbers,jdbcType=VARCHAR})
+  </select>
+  
+  <select id="queryNextByNumbers" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from lottery
+    where id in (select (id+1) from lottery where numbers = #{numbers,jdbcType=VARCHAR})
+  </select> 
 </mapper>

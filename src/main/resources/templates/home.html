@@ -47,6 +47,28 @@
     </tr>
    </table>
   </form>
+    <form name='countnumbers' th:action='@{/countnumbers}' method='GET'>
+   <table>
+    <tr>
+    	<td>计算出现次数，输入当前期numbers:</td>
+    	<td><input type='text' name='currentnum' value=''/></td>
+    </tr>
+    <tr>
+    	<td colspan='2'><input name="submit" type="submit" value="Search"/></td>
+    </tr>
+  </form>
+    <form name='countthreenumbers' th:action='@{/countthreenumbers}' method='GET'>
+   <table>
+    <tr>
+    	<td>计算出现三个数组合次数，输入当前期numbers:</td>
+    	<td><input type='text' name='currentnum' value=''/></td>
+    </tr>
+    <tr>
+    	<td colspan='2'><input name="submit" type="submit" value="Search"/></td>
+    </tr>
+   </table>
+  </form>
+ 
   </div>
   <!--<div id="footer" th:include="page :: copy"></div>-->
   </body>

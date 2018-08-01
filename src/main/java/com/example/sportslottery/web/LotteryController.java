@@ -2,6 +2,7 @@ package com.example.sportslottery.web;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -112,6 +113,60 @@ public class LotteryController {
 			}
 			model.addAttribute("querybyid",list);
 			return "querybyid";
+	    }
+	  }
+	  
+	  @RequestMapping(value="/countnumbers", method = RequestMethod.GET)
+	  public  String countLotteryNumbers(@RequestParam(value="currentnum",required=true,defaultValue="0") String currentnum,
+			  Model model) {
+		if(currentnum==null||currentnum.isEmpty()) return "notFound";
+		logger.warn("currentnum:"+currentnum);
+		List<Lottery> nextLottery = lotteryService.queryNextByNumbers(currentnum);
+		int sum = lotteryService.countNextByNumbers(currentnum);
+		if(nextLottery==null||nextLottery.isEmpty()||sum<=0) return "notFound";
+		else{
+			HashMap<String,Integer> resultMap= new HashMap<String,Integer>();
+			for(Lottery lottery : nextLottery) {
+				String[] everyStrs=lottery.getNumbers().split(",");
+			    for(int i=0;i<everyStrs.length;i++) {
+			    	for(int k=i+1;k<everyStrs.length;k++) {
+			    			String key = everyStrs[i]+','+everyStrs[k];
+			    			int value = resultMap.getOrDefault(key, 0);
+			    			resultMap.put(key, value+1);
+			    	}
+			    }
+			}
+			model.addAttribute("sum",sum);
+			model.addAttribute("resultmap",resultMap);
+			return "countnumbers";
+	    }
+	  }
+	  
+	  @RequestMapping(value="/countthreenumbers", method = RequestMethod.GET)
+	  public  String countThreeNumbers(@RequestParam(value="currentnum",required=true,defaultValue="0") String currentnum,
+			  Model model) {
+		if(currentnum==null||currentnum.isEmpty()) return "notFound";
+		logger.warn("currentnum:"+currentnum);
+		List<Lottery> nextLottery = lotteryService.queryNextByNumbers(currentnum);
+		int sum = lotteryService.countNextByNumbers(currentnum);
+		if(nextLottery==null||nextLottery.isEmpty()||sum<=0) return "notFound";
+		else{
+			HashMap<String,Integer> resultMap= new HashMap<String,Integer>();
+			for(Lottery lottery : nextLottery) {
+				String[] everyStrs=lottery.getNumbers().split(",");
+			    for(int i=0;i<everyStrs.length;i++) {
+			    	for(int k=i+1;k<everyStrs.length;k++) {
+			    		for(int m=k+1;m<everyStrs.length;m++) {
+			    			String key = everyStrs[i]+','+everyStrs[k]+','+everyStrs[m];
+			    			int value = resultMap.getOrDefault(key, 0);
+			    			resultMap.put(key, value+1);
+			    		}
+			    	}
+			    }
+			}
+			model.addAttribute("sum",sum);
+			model.addAttribute("resultmap",resultMap);
+			return "countnumbers";
 	    }
 	  }
 	  

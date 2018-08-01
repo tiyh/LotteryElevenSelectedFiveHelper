@@ -26,4 +26,12 @@ public class LotteryServiceImpl implements LotteryService {
 		return lotteryMapper.queryLastByNumbers(numbers);
 	}
 
+	@Override
+	public int countNextByNumbers(String numbers) {
+		return lotteryMapper.countNextByNumbers(numbers);
+	}
+	@Override
+	public List<Lottery> queryNextByNumbers(String numbers){
+		return lotteryMapper.queryNextByNumbers(numbers);
+	}
 }

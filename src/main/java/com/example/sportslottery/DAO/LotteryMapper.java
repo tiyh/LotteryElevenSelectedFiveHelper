@@ -11,4 +11,6 @@ public interface LotteryMapper {
 	Lottery queryById(int id);
 	List<Lottery> queryByNumbers(String numbers);
 	List<Lottery> queryLastByNumbers(String numbers);
+	int countNextByNumbers(String numbers);
+	List<Lottery> queryNextByNumbers(String numbers);
 }

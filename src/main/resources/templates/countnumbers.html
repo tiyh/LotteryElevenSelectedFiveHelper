@@ -1,0 +1,25 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Lottery</title>
+    <link rel="stylesheet" 
+          type="text/css" 
+          th:href="@{/static/style.css}"></link>
+  </head>
+  <body onload='document.f.username.focus();'>
+                <div class="panel-body">  
+                	<a th:href="@{/}">返回首页</a>
+					<ul th:text="${sum}"></ul>
+                	<ul th:each="map : ${resultmap}"> 
+                	    <li>  
+                            	<span>数字组合</span>  
+                            	<span>出现次数</span>  
+                        </li> 
+        				<li> 
+                       		<span th:text="${map.key}"></span>  
+	                        <span th:text="${map.value}"></span>  
+						</li> 
+    				</ul>
+                </div>  
+  </body>
+</html>
