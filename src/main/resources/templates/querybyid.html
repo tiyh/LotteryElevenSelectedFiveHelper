@@ -1,0 +1,26 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Lottery</title>
+    <link rel="stylesheet" 
+          type="text/css" 
+          th:href="@{/static/style.css}"></link>
+  </head>
+  <body onload='document.f.username.focus();'>
+                <div class="panel-body">  
+                	<a th:href="@{/}">返回首页</a>
+                    <table class="table-bordered" style="width: 100%">  
+                        <tr style="height: 40px; background-color: #f7ecb5">  
+                            <th class="text-center">期数</th>  
+                            <th class="text-center">日期</th>  
+                            <th class="text-center">开奖号码</th>  
+                        </tr>  
+                        <tr th:each="lottery:${querybyid}" class="text-center" style="height: 40px">  
+                            <td><span th:text="${lottery.id}"></span></td>   
+                            <td><span th:text="${lottery.time}"></span></td>  
+                            <td><span th:text="${lottery.numbers}"></span></td>  
+                        </tr>  
+                    </table>  
+                </div>  
+  </body>
+</html>

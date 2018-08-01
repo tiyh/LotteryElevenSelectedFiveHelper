@@ -1,0 +1,53 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Lottery</title>
+    <link rel="stylesheet" 
+          type="text/css" 
+          th:href="@{/static/style.css}"></link>
+  </head>
+  <body onload='document.f.username.focus();'>
+    <!--<div id="header" th:include="page :: header"></div>-->
+
+  <div id="content">
+  
+    <a th:href="@{/}">刷新</a>
+  
+  
+  <form name='querybyid' th:action='@{/querybyid}' method='GET'>
+   <table>
+    <tr><td>按照id查询上下5期结果，输入id:</td><td>
+        <input type='text' name='id' value='' /></td></tr>
+    <tr><td colspan='2'>
+        <input name="submit" type="submit" value="Search"/></td></tr>
+   </table>
+  </form>
+  
+    <form name='querybybumbers' th:action='@{/querybybumbers}' method='GET'>
+   <table>
+    <tr><td>按照numbers查询上下4期结果，输入numbers:</td><td>
+        <input type='text' name='numbers' value=''/></td></tr>
+    <tr><td colspan='2'>
+        <input name="submit" type="submit" value="Search"/></td></tr>
+   </table>
+  </form>
+  
+  <form name='querytwoterm' th:action='@{/querytwoterm}' method='GET'>
+   <table>
+    <tr>
+    	<td>按照两期numbers查询，输入前一期numbers:</td>
+    	<td><input type='text' name='beforenum' value=''/></td>
+    </tr>
+    <tr>
+    	<td>输入当前numbers:</td>
+    	<td><input type='text' name='currentnum' value=''/></td>
+    </tr>
+    <tr>
+    	<td colspan='2'><input name="submit" type="submit" value="Search"/></td>
+    </tr>
+   </table>
+  </form>
+  </div>
+  <!--<div id="footer" th:include="page :: copy"></div>-->
+  </body>
+</html>
