@@ -1,54 +1,93 @@
 package com.example.sportslottery.web;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import org.assertj.core.util.Arrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.example.sportslottery.DAO.LotteryMapper;
 import com.example.sportslottery.model.Lottery;
+import com.example.sportslottery.service.LotteryService;
 
 @Controller
 public class LotteryController {
-	  private LotteryMapper lotteryMapper;
+	  private final Logger logger = LoggerFactory.getLogger(LotteryController.class);
+	  @Autowired
+	  private LotteryService lotteryService;
+	  
 	  @RequestMapping(value="/", method = RequestMethod.GET)
 	  public  String homepage() {
-	    System.out.println("HOME");
 	    return "home";
 	  }
-	  @RequestMapping(value="/lottery", method = RequestMethod.GET)
+	  
+	  @RequestMapping(value="/querybybumbers", method = RequestMethod.GET)
 	  public  String queryLotteryNumbers(@RequestParam(value="numbers",required=true,defaultValue="0") String numbers,
 			  Model model) {
-		/*int term=0;
-		try {
-			term = Integer.parseInt(id);
-		} catch (NumberFormatException e) {
-		    e.printStackTrace();
-		}*/
 		if(numbers==null||numbers.isEmpty()) return "notFound";
-		List<Lottery> findedLottery = lotteryMapper.queryByNumbers(numbers);
+		List<Lottery> findedLottery = lotteryService.queryByNumbers(numbers);
 		if(findedLottery==null||findedLottery.isEmpty()) return "notFound";
 		else{
-			List<String> resultlist= new ArrayList<String>();
+			List<ArrayList<Lottery>> resultlist= new ArrayList<ArrayList<Lottery>>();
 			for(Lottery lottery : findedLottery) {
-				StringBuilder s = new StringBuilder();
-				for(int i=-3;i<4;i++){
-					Lottery nearCase = lotteryMapper.queryById(lottery.getId()+i);
-					if(nearCase!=null) s.append(nearCase.toString());
+				ArrayList<Lottery> s = new ArrayList<Lottery>();
+				for(int i=-2;i<=1;i++){
+					Lottery nearCase = lotteryService.queryById(lottery.getId()+i);
+					if(nearCase!=null) s.add(nearCase);
 				}
-				if(s.length()!=0) resultlist.add(s.toString());
+				if(!s.isEmpty()) {
+					logger.warn("resultlist.size():"+resultlist.size());
+					resultlist.add(s);
+				}
 			}
-			model.addAttribute(resultlist);
-			return "profile";
+			model.addAttribute("querybybumbers",resultlist);
+			return "querybybumbers";
 	    }
 	  }
-	  @RequestMapping(value="/unionlottery", method = RequestMethod.GET)
-	  public  String queryLotteryTwo(@RequestParam(value="id",required=true,defaultValue="0") String id,
+	  
+	  @RequestMapping(value="/querytwoterm", method = RequestMethod.GET)
+	  public  String querylastLotteryNumbers(@RequestParam(value="beforenum",required=true,defaultValue="0") String beforenum,
+			  @RequestParam(value="currentnum",required=true,defaultValue="0") String currentnum,Model model) {
+		if(beforenum==null||beforenum.isEmpty()||currentnum==null||currentnum.isEmpty()) return "notFound";
+		logger.warn("currentnum:"+currentnum+" beforenum:"+beforenum);
+		List<Lottery> findedLottery = lotteryService.queryLastByNumbers(currentnum);
+		if(findedLottery==null||findedLottery.isEmpty()) return "notFound";
+		else{
+			List<ArrayList<Lottery>> resultlist= new ArrayList<ArrayList<Lottery>>();
+			for(Lottery lottery : findedLottery) {
+				String[] strs=lottery.getNumbers().split(",");
+			    List<String> nums = Arrays.asList(strs);
+			    String[] befstrs=beforenum.split(",");
+			    int j=0;
+			    for(int i=0;i<befstrs.length;i++){
+			    	if(nums.contains(befstrs[i])) j++;
+			    }
+			    if(j>=4){
+					ArrayList<Lottery> s = new ArrayList<Lottery>();
+					for(int i=-2;i<=2;i++){
+						Lottery nearCase = lotteryService.queryById(lottery.getId()+i);
+						if(nearCase!=null) s.add(nearCase);
+					}
+					if(!s.isEmpty()) {
+						logger.warn("tiyh-----------resultlist.size():"+resultlist.size());
+						resultlist.add(s);
+					}
+			    	
+			    }
+			}
+			model.addAttribute("querybybumbers",resultlist);
+			return "querybybumbers";
+	    }
+	  }
+	  
+	  @RequestMapping(value="/querybyid", method = RequestMethod.GET)
+	  public  String queryLastById(@RequestParam(value="id",required=true,defaultValue="0") String id,
 			  Model model) {
 		int term=0;
 		try {
@@ -56,22 +95,23 @@ public class LotteryController {
 		} catch (NumberFormatException e) {
 		    e.printStackTrace();
 		}
-		if(term==0) return "notFound";
-		Lottery findedLottery = lotteryMapper.queryById(term);
-		if(findedLottery==null) return "notFound";
+		if(term==0){
+			return "notFound";
+		}
+		Lottery findedLottery = lotteryService.queryById(term);
+		if(findedLottery==null){
+			return "notFound";
+		}
 		else{
 			List<Lottery> list= new ArrayList<Lottery>();
-			for(int i=-3;i<4;i++){
-				Lottery temp = lotteryMapper.queryById(term+i);
+			for(int i=-2;i<=1;i++){
+				Lottery temp = lotteryService.queryById(term+i);
 				if(temp!=null){
-					String[] strs=temp.getNumbers().split(",");
-				    List nums = Arrays.asList(strs);
-				    nums.contains("");
 					list.add(temp);
 				}
 			}
-			model.addAttribute(list);
-			return "profile";
+			model.addAttribute("querybyid",list);
+			return "querybyid";
 	    }
 	  }
 	  

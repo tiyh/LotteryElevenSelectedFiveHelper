@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.example.sportslottery.DAO" >
+<mapper namespace="com.example.sportslottery.DAO.LotteryMapper" >
   <resultMap id="BaseResultMap" type="com.example.sportslottery.model.Lottery" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="numbers" property="numbers" jdbcType="VARCHAR" />
     <result column="time" property="time" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, numbers
+    id,time,numbers
   </sql>
   <select id="queryById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
-    <include refid="Base_Column_List" />
+    <include refid="Base_Column_List" ></include>
     from lottery
     where id = #{id,jdbcType=INTEGER}
   </select>
@@ -21,4 +21,10 @@
     from lottery
     where numbers = #{numbers,jdbcType=VARCHAR}
   </select>
+   <select id="queryLastByNumbers" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from lottery
+    where id in (select (id-1) from lottery where numbers = #{numbers,jdbcType=VARCHAR})
+  </select>  
 </mapper>
