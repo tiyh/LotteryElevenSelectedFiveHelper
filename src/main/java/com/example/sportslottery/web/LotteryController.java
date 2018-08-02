@@ -2,8 +2,10 @@ package com.example.sportslottery.web;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,8 +138,10 @@ public class LotteryController {
 			    	}
 			    }
 			}
+			List<Map.Entry<String, Integer>> entryArrayList = new ArrayList<>(resultMap.entrySet());
+			Collections.sort(entryArrayList, (o1, o2) -> o2.getValue().compareTo(o1.getValue()));
 			model.addAttribute("sum",sum);
-			model.addAttribute("resultmap",resultMap);
+			model.addAttribute("resultmap",entryArrayList);
 			return "countnumbers";
 	    }
 	  }
@@ -164,8 +168,10 @@ public class LotteryController {
 			    	}
 			    }
 			}
+			List<Map.Entry<String, Integer>> entryArrayList = new ArrayList<>(resultMap.entrySet());
+			Collections.sort(entryArrayList, (o1, o2) -> o2.getValue().compareTo(o1.getValue()));
 			model.addAttribute("sum",sum);
-			model.addAttribute("resultmap",resultMap);
+			model.addAttribute("resultmap",entryArrayList);
 			return "countnumbers";
 	    }
 	  }
