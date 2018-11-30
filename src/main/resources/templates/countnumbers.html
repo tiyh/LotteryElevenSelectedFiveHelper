@@ -7,19 +7,21 @@
           th:href="@{/static/style.css}"></link>
   </head>
   <body onload='document.f.username.focus();'>
-                <div class="panel-body">  
-                	<a th:href="@{/}">返回首页</a>
-					<ul th:text="${sum}"></ul>
-                	<ul th:each="map : ${resultmap}"> 
-                	    <li>  
-                            	<span>数字组合</span>  
-                            	<span>出现次数</span>  
-                        </li> 
-        				<li> 
-                       		<span th:text="${map.key}"></span>  
-	                        <span th:text="${map.value}"></span>  
-						</li> 
-    				</ul>
-                </div>  
+      <div class="panel-body">
+          <a th:href="@{/}">返回首页</a>
+					<ul th:text="${sum}">sum</ul>
+          <ul th:text="${correct}">correct</ul>
+          <ul th:text="${freq}">freq</ul>
+          <ul th:each="map : ${resultmap}">
+              <li>
+                  <span>数字组合</span>
+                  <span>出现次数</span>
+              </li>
+              <li>
+                  <span th:text="${map.key}"></span>
+	                <span th:text="${map.value}"></span>
+						  </li>
+          </ul>
+      </div>
   </body>
 </html>

@@ -176,4 +176,63 @@ public class LotteryController {
 	    }
 	  }
 	  
+
+	  @RequestMapping(value="/querytwotermstaticsic", method = RequestMethod.GET)
+	  public  String twoNumbersStatistics(@RequestParam(value="startid",required=true,defaultValue="18070635") String startid,@RequestParam(value="endid",required=true,defaultValue="18070735") String endid ,Model model) {
+		int startId = Integer.parseInt(startid);
+		int endId = Integer.parseInt(endid);
+		int sumtimes = 1;
+		int correcttimes = 0;
+		for(;endId>startId ;endId--) {
+			if(endId%100<=2) {
+				endId = endId-100+63;
+				continue;
+			}
+			Lottery predictnumLottery = lotteryService.queryById(endId);
+			Lottery currentnumLottery = lotteryService.queryById(endId-1);
+			Lottery beforenumLottery = lotteryService.queryById(endId-2);
+			if(predictnumLottery==null||currentnumLottery==null||beforenumLottery==null)
+				continue;
+			String predictnum = predictnumLottery.getNumbers();
+			String currentnum = currentnumLottery.getNumbers();
+			String beforenum = beforenumLottery.getNumbers();
+			if(predictnum==null||currentnum==null||beforenum==null
+					||predictnum.isEmpty()||currentnum.isEmpty()||beforenum.isEmpty())
+				continue;
+			List<Lottery> findedLottery = lotteryService.queryLastByNumbers(currentnum);
+			if(findedLottery==null||findedLottery.isEmpty()) continue;
+			for(Lottery lottery : findedLottery) {
+				String[] strs=lottery.getNumbers().split(",");
+				List<String> nums = Arrays.asList(strs);
+				String[] befstrs=beforenum.split(",");
+				int j=0;
+				for(int i=0;i<befstrs.length;i++){
+				    if(nums.contains(befstrs[i])) j++;
+				}
+				if(j>=4){
+					Lottery nearCase = lotteryService.queryById(lottery.getId()+2);
+					if(nearCase!=null) {
+						sumtimes ++;
+						String[] strs2=nearCase.getNumbers().split(",");
+						List<String> nums2 = Arrays.asList(strs2);
+						String[] befstrs2=predictnum.split(",");
+						int p=0;
+						for(int i=0;i<befstrs2.length;i++){
+						    if(nums2.contains(befstrs2[i])) p++;
+						}
+						logger.warn("before--correct-----------------nearCase.getNumbers():-------"+nearCase.getNumbers()
+						    +"-------predictnum:"+predictnum);
+						if(p>=3) {
+						    correcttimes++;
+						}
+					}
+				}
+		    }
+		}
+		double freq = correcttimes/(double)sumtimes;
+		model.addAttribute("sum",sumtimes);
+		model.addAttribute("correct",correcttimes);
+		model.addAttribute("freq",freq);
+		return "countnumbers";
+	  }
 }
