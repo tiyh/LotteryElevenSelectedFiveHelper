@@ -178,7 +178,8 @@ public class LotteryController {
 	  
 
 	  @RequestMapping(value="/querytwotermstaticsic", method = RequestMethod.GET)
-	  public  String twoNumbersStatistics(@RequestParam(value="startid",required=true,defaultValue="18070635") String startid,@RequestParam(value="endid",required=true,defaultValue="18070735") String endid ,Model model) {
+	  public  String twoNumbersStatistics(@RequestParam(value="startid",required=true,defaultValue="18070635") String startid,
+			  @RequestParam(value="endid",required=true,defaultValue="18070735") String endid ,Model model) {
 		int startId = Integer.parseInt(startid);
 		int endId = Integer.parseInt(endid);
 		int sumtimes = 1;
@@ -211,7 +212,7 @@ public class LotteryController {
 				}
 				if(j>=4){
 					Lottery nearCase = lotteryService.queryById(lottery.getId()+2);
-					if(nearCase!=null) {
+					if(nearCase!=null&&nearCase.getId()<endId) {
 						sumtimes ++;
 						String[] strs2=nearCase.getNumbers().split(",");
 						List<String> nums2 = Arrays.asList(strs2);
@@ -222,7 +223,7 @@ public class LotteryController {
 						}
 						logger.warn("before--correct-----------------nearCase.getNumbers():-------"+nearCase.getNumbers()
 						    +"-------predictnum:"+predictnum);
-						if(p>=3) {
+						if(p==2) {
 						    correcttimes++;
 						}
 					}
@@ -233,6 +234,7 @@ public class LotteryController {
 		model.addAttribute("sum",sumtimes);
 		model.addAttribute("correct",correcttimes);
 		model.addAttribute("freq",freq);
+		logger.warn("final--------------------------freq:"+freq);
 		return "countnumbers";
 	  }
 }
