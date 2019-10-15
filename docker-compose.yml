@@ -1,0 +1,9 @@
+version: "2"
+services:
+  lottery:
+    build: .
+    volumes:
+      - "/root/logs/lottery/:/root/logs/lottery"
+    ports:
+      - 8003:8003
+    network_mode: "host"
