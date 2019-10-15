@@ -1,7 +1,7 @@
 
 # -*- coding: utf-8 -*-
 
-import urllib  
+import urllib
 import urllib2
 import re
 import string
@@ -10,11 +10,22 @@ import time
 
 class Ticai:   
     def __init__(self):
-        self.number = []  
-    def ticai_crawl(self,url):  
-	req = urllib2.Request(url)    
-        response = urllib2.urlopen(req) 
-        self.deal_data(response.read().decode('utf8'))
+        self.number = []
+
+    def ticai_crawl(self,url):
+        req = urllib2.Request(url)
+        Max_Num=6
+        for i in range(Max_Num):
+            try:
+                response=urllib2.urlopen(req,timeout=5)
+                break
+            except:
+                if i < Max_Num:
+                    continue
+                else :
+                    print 'URLError: <urlopen error timed out> All times is failed '
+        self.deal_data(response.read())
+
     def deal_data(self,myPage): 
 	myqiItems =  re.findall('<div.*?class="pig-uul-ll">(.*?)</div>\s</div>\s</div>',myPage,re.S)
         for qiItems in myqiItems:
