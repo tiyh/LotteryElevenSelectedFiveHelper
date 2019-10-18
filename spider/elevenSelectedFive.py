@@ -1,30 +1,35 @@
 
 # -*- coding: utf-8 -*-
 
-import urllib
 import urllib2
 import re
 import string
 import MySQLdb
 import time
+from agency.agency_tools import proxy
 
-class Ticai:   
+class Ticai:
     def __init__(self):
         self.number = []
+        self.proxy = proxy()
+        self._proxies = self.proxy.setProxy()
 
     def ticai_crawl(self,url):
-        req = urllib2.Request(url)
-        Max_Num=6
+        Max_Num=4
         for i in range(Max_Num):
+            proxy_support = urllib2.ProxyHandler({"https": self._proxies})
+            opener = urllib2.build_opener(proxy_support)
+            urllib2.install_opener(opener)
             try:
-                response=urllib2.urlopen(req,timeout=5)
+                response=urllib2.urlopen(url,timeout=5)
+                self.deal_data(response.read())
                 break
             except:
+                self._proxies = self.proxy.setProxy()
                 if i < Max_Num:
                     continue
                 else :
                     print 'URLError: <urlopen error timed out> All times is failed '
-        self.deal_data(response.read())
 
     def deal_data(self,myPage): 
 	myqiItems =  re.findall('<div.*?class="pig-uul-ll">(.*?)</div>\s</div>\s</div>',myPage,re.S)
@@ -59,7 +64,6 @@ class Ticai:
                 except:
                     db.rollback()
                     print "rollback"
-		
 
 if __name__ == '__main__':
 
