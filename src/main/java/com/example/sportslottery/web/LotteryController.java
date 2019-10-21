@@ -7,11 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.Pattern;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +23,7 @@ import com.example.sportslottery.model.Lottery;
 import com.example.sportslottery.service.LotteryService;
 
 @Controller
+@Validated
 public class LotteryController {
 	  private final Logger logger = LoggerFactory.getLogger(LotteryController.class);
 	  @Autowired
@@ -31,7 +35,11 @@ public class LotteryController {
 	  }
 	  
 	  @RequestMapping(value="/querybybumbers", method = RequestMethod.GET)
-	  public  String queryLotteryNumbers(@RequestParam(value="numbers",required=true,defaultValue="0") String numbers,
+	  public  String queryLotteryNumbers(
+              @Pattern(regexp = "^(0?[1-9]|10|11),(0?[1-9]|10|11)"
+              		+ ",(0?[1-9]|10|11),(0?[1-9]|10|11),(0?[1-9]|10|11)$", message = "format error,fill in  \"XX,XX,XX,XX,XX\"")
+			  @RequestParam(value="numbers",required=true,defaultValue="0") 
+              String numbers,
 			  Model model) {
 		if(numbers==null||numbers.isEmpty()) return "notFound";
 		List<Lottery> findedLottery = lotteryService.queryByNumbers(numbers);
@@ -55,7 +63,12 @@ public class LotteryController {
 	  }
 	  
 	  @RequestMapping(value="/querytwoterm", method = RequestMethod.GET)
-	  public  String querylastLotteryNumbers(@RequestParam(value="beforenum",required=true,defaultValue="0") String beforenum,
+	  public  String querylastLotteryNumbers(
+              @Pattern(regexp = "^(0?[1-9]|10|11),(0?[1-9]|10|11)"
+                		+ ",(0?[1-9]|10|11),(0?[1-9]|10|11),(0?[1-9]|10|11)$", message = "format error,fill in  \"XX,XX,XX,XX,XX\"")
+			  @RequestParam(value="beforenum",required=true,defaultValue="0") String beforenum,
+              @Pattern(regexp = "^(0?[1-9]|10|11),(0?[1-9]|10|11)"
+                		+ ",(0?[1-9]|10|11),(0?[1-9]|10|11),(0?[1-9]|10|11)$", message = "format error,fill in  \"XX,XX,XX,XX,XX\"")
 			  @RequestParam(value="currentnum",required=true,defaultValue="0") String currentnum,Model model) {
 		if(beforenum==null||beforenum.isEmpty()||currentnum==null||currentnum.isEmpty()) return "notFound";
 		logger.warn("currentnum:"+currentnum+" beforenum:"+beforenum);
@@ -119,7 +132,10 @@ public class LotteryController {
 	  }
 	  
 	  @RequestMapping(value="/countnumbers", method = RequestMethod.GET)
-	  public  String countLotteryNumbers(@RequestParam(value="currentnum",required=true,defaultValue="0") String currentnum,
+	  public  String countLotteryNumbers(
+              @Pattern(regexp = "^(0?[1-9]|10|11),(0?[1-9]|10|11)"
+                		+ ",(0?[1-9]|10|11),(0?[1-9]|10|11),(0?[1-9]|10|11)$", message = "format error,fill in  \"XX,XX,XX,XX,XX\"")
+			  @RequestParam(value="currentnum",required=true,defaultValue="0") String currentnum,
 			  Model model) {
 		if(currentnum==null||currentnum.isEmpty()) return "notFound";
 		logger.warn("currentnum:"+currentnum);
@@ -147,7 +163,10 @@ public class LotteryController {
 	  }
 	  
 	  @RequestMapping(value="/countthreenumbers", method = RequestMethod.GET)
-	  public  String countThreeNumbers(@RequestParam(value="currentnum",required=true,defaultValue="0") String currentnum,
+	  public  String countThreeNumbers(
+              @Pattern(regexp = "^(0?[1-9]|10|11),(0?[1-9]|10|11)"
+                		+ ",(0?[1-9]|10|11),(0?[1-9]|10|11),(0?[1-9]|10|11)$", message = "format error,fill in  \"XX,XX,XX,XX,XX\"")
+			  @RequestParam(value="currentnum",required=true,defaultValue="0") String currentnum,
 			  Model model) {
 		if(currentnum==null||currentnum.isEmpty()) return "notFound";
 		logger.warn("currentnum:"+currentnum);
@@ -178,7 +197,9 @@ public class LotteryController {
 	  
 
 	  @RequestMapping(value="/querytwotermstaticsic", method = RequestMethod.GET)
-	  public  String twoNumbersStatistics(@RequestParam(value="startid",required=true,defaultValue="18070635") String startid,
+	  public  String twoNumbersStatistics(
+			  @Pattern(regexp = "^[0-9]*$", message = "format error,number only")
+			  @RequestParam(value="startid",required=true,defaultValue="18070635") String startid,
 			  @RequestParam(value="endid",required=true,defaultValue="18070735") String endid ,Model model) {
 		int startId = Integer.parseInt(startid);
 		int endId = Integer.parseInt(endid);
