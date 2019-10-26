@@ -8,13 +8,13 @@ import string
 import MySQLdb
 import time
 import datetime
+import random
+from TaskTimer import TaskTimer
 from agency.agency_tools import proxy
 
 class Ticai:
     def __init__(self):
-        self.number = []
-        self.proxy = proxy()
-        self._proxies = self.proxy.setProxy()
+        self.number = [] 
 
     def ticai_crawl(self,url,data):
         #proxy_info = {'host': '119.101.114.196',
@@ -27,11 +27,11 @@ class Ticai:
         #urllib2.install_opener(opener)
         print url
         Max_Num=6
+        response=''
         for i in range(Max_Num):
             try:
                 req = urllib2.Request(url, data)
                 response = urllib2.urlopen(req,timeout=5)
-                self.deal_data(response.read())
                 break
             except:
                 print "url open exception"
@@ -39,12 +39,17 @@ class Ticai:
                     continue
                 else :
                     print 'URLError: <urlopen error timed out> All times is failed '
-        
+                    return
+        self.deal_data(response.read())
 
-    def deal_data(self,myPage): 
+    def deal_data(self,response): 
+        myPage=response.replace('\"}','<tr class=\'bg\'>')
         myqiItems =  re.findall('<tr><td>(.*?)</td><tr class=\'bg\'>',myPage,re.S)
         myqiItems +=  re.findall('<tr class=\'bg\'><td>(.*?)</td><tr>',myPage,re.S)
+        db = MySQLdb.connect("localhost", "root", "3664", "test", charset='utf8' )
+        
         for qiItems in myqiItems:
+            print qiItems
             period = qiItems[0:9].replace("-","")
             print period
             time = re.findall('<td class=\'tdright\'>(.*?)</td>',qiItems,re.S)
@@ -60,8 +65,9 @@ class Ticai:
                 cursor.execute(sql)
                 db.commit()
             except:
-                db.rollback()
+                db.rollback() 
                 print "rollback"
+        db.close()
 
     def gen_dates(self,start, days):
         day = datetime.timedelta(days=1)
@@ -75,24 +81,32 @@ class Ticai:
         if end is None:
             end = datetime.datetime.now()
         data = []
+        if start==end:
+            data.append(end)
+            return data
         for d in self.gen_dates(start, (end-start).days):
             data.append(d)
         return data
+    def crawl(self,start=None, end=None):
+        url =r'https://kaijiang.aicai.com/open/kcResultByDate.do'
+        values = {"gameIndex" : "303","searchDate" : "2019-10-11"}
+        for i in self.get_date_list(start,end):
+            dayname =i.strftime("%Y-%m-%d")
+            print dayname
+            values["searchDate"]=dayname
+            data = urllib.urlencode(values)
+            self.ticai_crawl(url,data)
+            time.sleep(random.random())
+        #self.db.close()
 
 
 if __name__ == '__main__':
-    db = MySQLdb.connect("localhost", "root", "3664", "test", charset='utf8' )
     ticai = Ticai()
-    url =r'https://kaijiang.aicai.com/open/kcResultByDate.do'
-    values = {"gameIndex" : "303","searchDate" : "2019-10-11"}
-    for i in ticai.get_date_list():
-        dayname =i.strftime("%Y-%m-%d")
-        print dayname
-        values["searchDate"]=dayname
-        data = urllib.urlencode(values)
-        ticai.ticai_crawl(url,data)
-        time.sleep(0.05)
-    db.close()
+    #ticai.crawl(datetime.datetime.now()-datetime.timedelta(days =1),datetime.datetime.now())
+    #ticai.crawl(datetime.datetime.strptime("2009-11-01", "%Y-%m-%d"),datetime.datetime.strptime("2012-07-02", "%Y-%m-%d"))
+    timer = TaskTimer()
+    timer.join_task(ticai.crawl, [datetime.datetime.now()-datetime.timedelta(days =1),datetime.datetime.now()], timing=3)
+    timer.start()
 
 '''
 create table lottery (
